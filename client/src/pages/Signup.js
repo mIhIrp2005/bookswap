@@ -33,8 +33,9 @@ const Signup = () => {
         phone: formData.phone.trim(),
         genres: formData.genres,
       };
-      await register(payload);
-      navigate('/login');
+      const res = await register(payload);
+      // Navigate to verify email page, pass email and dev otpPreview if present
+      navigate('/verify-email', { state: { email: formData.email.trim(), devOtp: res?.data?.otpPreview || '' } });
     } catch (error) {
       setError(error.response?.data?.message || 'An error occurred');
     }

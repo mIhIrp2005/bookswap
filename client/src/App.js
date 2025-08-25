@@ -7,7 +7,7 @@ import Signup from './pages/Signup';
 import AddBook from './pages/AddBook';
 import BookDetails from './pages/BookDetails';
 import Dashboard from './pages/Dashboard';
-
+import VerifyEmail from './pages/VerifyEmail';
 
 function App() {
   return (
@@ -19,6 +19,7 @@ function App() {
         <Route path="/add-book" element={<AddBook />} />
         <Route path="/book/:id" element={<BookDetails />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
         {/* Removed separate /swaps page since Dashboard will include Swap Activity tab */}
       </Routes>
     </Router>

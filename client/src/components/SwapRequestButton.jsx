@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { getMyBooks, getBookById } from '../services/api';
-import { createSwap } from '../services/api';
+import { getMyBooks, getBookById, createSwap } from '../services/api';
 
-const SwapRequestButton = ({ requestedBookId }) => {
+function SwapRequestButton({ requestedBookId }) {
   const [open, setOpen] = useState(false);
   const [myBooks, setMyBooks] = useState([]);
   const [selectedBookId, setSelectedBookId] = useState('');
@@ -10,12 +9,17 @@ const SwapRequestButton = ({ requestedBookId }) => {
   const [ownerId, setOwnerId] = useState(null);
   const [error, setError] = useState('');
 
-  // Load my books when dropdown opens
+  const isAuthed = typeof window !== 'undefined' && !!localStorage.getItem('token');
+
+  // Always call hooks
   useEffect(() => {
-    if (!open) return;
+    if (!open || !isAuthed) return;
     (async () => {
       try {
-        const [mineRes, bookRes] = await Promise.all([getMyBooks(), getBookById(requestedBookId)]);
+        const [mineRes, bookRes] = await Promise.all([
+          getMyBooks(),
+          getBookById(requestedBookId),
+        ]);
         setMyBooks(mineRes.data || []);
         const b = bookRes.data;
         const toUserId = b?.owner?.id || b?.owner?._id || b?.ownerId?._id;
@@ -24,7 +28,7 @@ const SwapRequestButton = ({ requestedBookId }) => {
         setError('Failed to load data for swap request.');
       }
     })();
-  }, [open, requestedBookId]);
+  }, [open, requestedBookId, isAuthed]);
 
   const submit = async () => {
     if (!selectedBookId) {
@@ -54,6 +58,11 @@ const SwapRequestButton = ({ requestedBookId }) => {
     }
   };
 
+  // If not signed in, just render nothing (after hooks have been set up)
+  if (!isAuthed) {
+    return null;
+  }
+
   return (
     <div className="mt-2">
       {!open ? (
@@ -74,7 +83,9 @@ const SwapRequestButton = ({ requestedBookId }) => {
             >
               <option value="">Select a book...</option>
               {myBooks.map(b => (
-                <option key={b._id} value={b._id}>{b.title} — {b.author}</option>
+                <option key={b._id} value={b._id}>
+                  {b.title} — {b.author}
+                </option>
               ))}
             </select>
           </div>
@@ -90,7 +101,10 @@ const SwapRequestButton = ({ requestedBookId }) => {
               {loading ? 'Sending...' : 'Send Request'}
             </button>
             <button
-              onClick={() => { setOpen(false); setError(''); }}
+              onClick={() => {
+                setOpen(false);
+                setError('');
+              }}
               className="bg-gray-200 px-3 py-2 rounded"
             >
               Cancel
@@ -100,6 +114,6 @@ const SwapRequestButton = ({ requestedBookId }) => {
       )}
     </div>
   );
-};
+}
 
 export default SwapRequestButton;

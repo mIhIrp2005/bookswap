@@ -34,3 +34,10 @@ export const rejectSwap = (id) => API.post(`/swaps/${id}/reject`);
 
 export const getUserProfile = () => API.get('/users/profile');
 export const updateProfile = (payload) => API.put('/users/profile', payload);
+
+// Notifications
+export const getNotifications = () => API.get('/notifications');
+
+// OTP verification
+export const verifyEmail = (payload) => API.post('/auth/verify-email', payload);
+export const resendVerification = (payload) => API.post('/auth/resend-otp', payload);

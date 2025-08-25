@@ -9,6 +9,7 @@ const bookRoutes = require('./routes/book');
 const requestRoutes = require('./routes/request');
 const userRoutes = require('./routes/user');
 const swapRoutes = require('./routes/swap');
+const notificationRoutes = require('./routes/notification');
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use('/api/books', bookRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/swaps', swapRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 const PORT = process.env.PORT || 5000;
 

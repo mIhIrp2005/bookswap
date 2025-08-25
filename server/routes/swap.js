@@ -1,9 +1,13 @@
+// Top of file imports (remove nodemailer)
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const auth = require('../middleware/authMiddleware');
 const SwapRequest = require('../models/SwapRequest');
 const Book = require('../models/Book');
+const User = require('../models/User');
+const Notification = require('../models/Notification');
+const nodemailer = require('nodemailer');
 
 // Protect all swap routes
 router.use(auth);
@@ -98,6 +102,7 @@ router.get('/outgoing', async (req, res) => {
 });
 
 // POST /api/swaps/:id/accept - accept the swap and exchange ownership
+// In router.post('/:id/accept', ...) – replace the mail/transporter block with notifications only
 router.post('/:id/accept', async (req, res) => {
   try {
     const id = req.params.id;
@@ -134,6 +139,28 @@ router.post('/:id/accept', async (req, res) => {
 
     swap.status = 'completed';
     await swap.save();
+
+    // Create in-app notifications only (SMTP/email sending removed)
+    try {
+      const [userA, userB] = await Promise.all([
+        User.findById(swap.fromUser).select('name email'),
+        User.findById(swap.toUser).select('name email'),
+      ]);
+
+      await Promise.all([
+        Notification.create({
+          userId: userA._id,
+          message: `Your swap with ${userB.name || userB.email} is confirmed! Contact: ${userB.email}`,
+        }),
+        Notification.create({
+          userId: userB._id,
+          message: `Your swap with ${userA.name || userA.email} is confirmed! Contact: ${userA.email}`,
+        }),
+      ]);
+    } catch (notifyErr) {
+      console.error('Notification step failed:', notifyErr?.message || notifyErr);
+      // Continue without failing the swap
+    }
 
     return res.status(200).json({ message: 'Swap accepted and completed', swap });
   } catch (error) {
