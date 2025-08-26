@@ -193,122 +193,123 @@ function Dashboard() {
   return (
     <div>
       <Navbar />
-      <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-white shadow-lg rounded-lg p-8 mb-6">
-            <h2 className="text-3xl font-extrabold text-gray-900">Welcome, {user.name}!</h2>
-            <p className="mt-2 text-lg text-gray-600">Manage your profile, books, and swaps.</p>
-            {error && (
-              <div className="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                {error}
-              </div>
-            )}
-          </div>
-
-          <div className="mb-6 flex gap-2">
-            <TabButton id="profile">My Profile</TabButton>
-            <TabButton id="books">My Books</TabButton>
-            <TabButton id="swaps">Swap Activity</TabButton>
-          </div>
-
-          {activeTab === 'profile' && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="md:col-span-2 bg-white shadow-lg rounded-lg p-6">
-                {!editMode ? (
-                  <div>
-                    <div className="text-gray-700">
-                      <div><span className="font-medium">Name:</span> {user.name}</div>
-                      <div><span className="font-medium">Email:</span> {user.email}</div>
-                      {user.phone && <div><span className="font-medium">Phone:</span> {user.phone}</div>}
-                      {user.preferredGenres?.length > 0 && (
-                        <div><span className="font-medium">Preferred Genres:</span> {user.preferredGenres.join(', ')}</div>
-                      )}
-                    </div>
-                    <button
-                      className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
-                      onClick={() => setEditMode(true)}
-                    >
-                      Edit Profile
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Name</label>
-                      <input className="mt-1 border rounded p-2 w-full" value={name} onChange={(e) => setName(e.target.value)} />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Email (read-only)</label>
-                      <input className="mt-1 border rounded p-2 w-full bg-gray-100" value={user.email} readOnly />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Phone</label>
-                      <input className="mt-1 border rounded p-2 w-full" value={phone} onChange={(e) => setPhone(e.target.value)} />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Preferred Genres (comma-separated)</label>
-                      <input className="mt-1 border rounded p-2 w-full" value={genresText} onChange={(e) => setGenresText(e.target.value)} />
-                    </div>
-                    <div className="flex gap-2">
-                      <button className="px-4 py-2 bg-green-600 text-white rounded" onClick={handleSaveProfile}>Save</button>
-                      <button className="px-4 py-2 bg-gray-300 rounded" onClick={() => {setEditMode(false); setName(user.name || ''); setPhone(user.phone || ''); setGenresText((user.preferredGenres||[]).join(', '));}}>Cancel</button>
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className="md:col-span-1">
-                <NotificationPanel />
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'books' && (
-            <div className="bg-white shadow-lg rounded-lg p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">My Books</h3>
-              {myBooks.length === 0 ? (
-                <p className="text-gray-500">You haven't added any books yet.</p>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {myBooks.map(book => (
-                    <div key={book._id} className="border rounded-lg overflow-hidden shadow">
-                      <img
-                        src={book.imageURL || 'https://via.placeholder.com/600x400?text=No+Image'}
-                        alt={book.title}
-                        className="w-full h-48 object-cover"
-                        onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/600x400?text=No+Image'; }}
-                      />
-                      <div className="p-4">
-                        <h4 className="text-lg font-semibold mb-1">{book.title}</h4>
-                        <p className="text-gray-600 mb-2">By {book.author}</p>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-gray-500 capitalize">{book.condition}</span>
-                          <button
-                            onClick={() => handleDeleteBook(book._id)}
-                            className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+      <div className="min-h-screen bg-gray-100">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="bg-white shadow-lg rounded-lg p-8 mb-6">
+              <h2 className="text-3xl font-extrabold text-gray-900">Welcome, {user.name}!</h2>
+              <p className="mt-2 text-lg text-gray-600">Manage your profile, books, and swaps.</p>
+              {error && (
+                <div className="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                  {error}
                 </div>
               )}
             </div>
-          )}
 
-          {activeTab === 'swaps' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-white shadow-lg rounded-lg p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Incoming Swap Requests</h3>
-                <SwapList items={incoming} incomingMode />
-              </div>
-              <div className="bg-white shadow-lg rounded-lg p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Your Swap Requests</h3>
-                <SwapList items={outgoing} incomingMode={false} />
-              </div>
+            <div className="mb-6 flex gap-2">
+              <TabButton id="profile">My Profile</TabButton>
+              <TabButton id="books">My Books</TabButton>
+              <TabButton id="swaps">Swap Activity</TabButton>
             </div>
-          )}
+
+            {activeTab === 'profile' && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-2 bg-white shadow-lg rounded-lg p-6">
+                  {!editMode ? (
+                    <div>
+                      <div className="text-gray-700">
+                        <div><span className="font-medium">Name:</span> {user.name}</div>
+                        <div><span className="font-medium">Email:</span> {user.email}</div>
+                        {user.phone && <div><span className="font-medium">Phone:</span> {user.phone}</div>}
+                        {user.preferredGenres?.length > 0 && (
+                          <div><span className="font-medium">Preferred Genres:</span> {user.preferredGenres.join(', ')}</div>
+                        )}
+                      </div>
+                      <button
+                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+                        onClick={() => setEditMode(true)}
+                      >
+                        Edit Profile
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Name</label>
+                        <input className="mt-1 border rounded p-2 w-full" value={name} onChange={(e) => setName(e.target.value)} />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Email (read-only)</label>
+                        <input className="mt-1 border rounded p-2 w-full bg-gray-100" value={user.email} readOnly />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Phone</label>
+                        <input className="mt-1 border rounded p-2 w-full" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Preferred Genres (comma-separated)</label>
+                        <input className="mt-1 border rounded p-2 w-full" value={genresText} onChange={(e) => setGenresText(e.target.value)} />
+                      </div>
+                      <div className="flex gap-2">
+                        <button className="px-4 py-2 bg-green-600 text-white rounded" onClick={handleSaveProfile}>Save</button>
+                        <button className="px-4 py-2 bg-gray-300 rounded" onClick={() => {setEditMode(false); setName(user.name || ''); setPhone(user.phone || ''); setGenresText((user.preferredGenres||[]).join(', '));}}>Cancel</button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="md:col-span-1">
+                  <NotificationPanel />
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'books' && (
+              <div className="bg-white shadow-lg rounded-lg p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">My Books</h3>
+                {myBooks.length === 0 ? (
+                  <p className="text-gray-500">You haven't added any books yet.</p>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {myBooks.map(book => (
+                      <div key={book._id} className="border rounded-lg overflow-hidden shadow">
+                        <img
+                          src={book.imageURL}
+                          alt={book.title}
+                          className="w-full h-48 object-cover"
+                        />
+                        <div className="p-4">
+                          <h4 className="text-lg font-semibold mb-1">{book.title}</h4>
+                          <p className="text-gray-600 mb-2">By {book.author}</p>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-gray-500 capitalize">{book.condition}</span>
+                            <button
+                              onClick={() => handleDeleteBook(book._id)}
+                              className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'swaps' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="bg-white shadow-lg rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">Incoming Swap Requests</h3>
+                  <SwapList items={incoming} incomingMode />
+                </div>
+                <div className="bg-white shadow-lg rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">Your Swap Requests</h3>
+                  <SwapList items={outgoing} incomingMode={false} />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

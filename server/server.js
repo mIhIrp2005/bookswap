@@ -6,8 +6,6 @@ const path = require('path');
 const fs = require('fs');
 const authRoutes = require('./routes/auth');
 const bookRoutes = require('./routes/book');
-const requestRoutes = require('./routes/request');
-const userRoutes = require('./routes/user');
 const swapRoutes = require('./routes/swap');
 const notificationRoutes = require('./routes/notification');
 
@@ -33,8 +31,6 @@ app.get('/', (req, res) => {
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
-app.use('/api/requests', requestRoutes);
-app.use('/api/users', userRoutes);
 app.use('/api/swaps', swapRoutes);
 app.use('/api/notifications', notificationRoutes);
 
