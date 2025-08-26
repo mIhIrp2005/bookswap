@@ -12,7 +12,25 @@ const notificationRoutes = require('./routes/notification');
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.set('trust proxy', true);
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  process.env.CLIENT_URL,           // e.g., https://bookswap-eight.vercel.app
+  'https://bookswap-eight.vercel.app',
+].filter(Boolean);
+
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: false,
+}));
+
 app.use(express.json());
 
 // Ensure uploads directory exists

@@ -1,6 +1,12 @@
 import axios from 'axios';
 
-const API = axios.create({ baseURL: 'http://localhost:5000/api' });
+const baseURL =
+  process.env.REACT_APP_API_BASE_URL ||
+  (typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+    ? 'https://bookswap-server-ep8q.onrender.com/api'
+    : 'http://localhost:5000/api');
+
+const API = axios.create({ baseURL, withCredentials: false, timeout: 20000 });
 
 API.interceptors.request.use((req) => {
     if (localStorage.getItem('token')) {
